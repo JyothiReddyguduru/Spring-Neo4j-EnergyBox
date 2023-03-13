@@ -2,6 +2,7 @@ package com.energybox.backendcodingchallenge.service;
 
 import com.energybox.backendcodingchallenge.domain.Sensor;
 import com.energybox.backendcodingchallenge.domain.SensorReadingModel;
+import com.energybox.backendcodingchallenge.domain.SensorReading;
 import com.energybox.backendcodingchallenge.repository.SensorRepository;
 import com.energybox.backendcodingchallenge.custom.models.Enums.SensorType;
 import com.energybox.backendcodingchallenge.custom.exception.EntityNotFoundException;
@@ -9,6 +10,9 @@ import com.energybox.backendcodingchallenge.custom.exception.EntityNotFoundExcep
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashSet;
 import java.util.Optional;
 
 @Service
@@ -31,7 +35,19 @@ public class SensorService {
         Optional<Sensor> sensor = getSensorById(reading.getSensorId());
         if(sensor.isPresent()){
             Sensor updatedSensor = sensor.get();
-            updatedSensor.setLastReading(readingService.updateReading(reading));
+            SensorType type = SensorType.valueOf(
+                    reading.getSensorType());
+            //get reading by sensor id
+            Optional<SensorReading> readingByType = readingService.getReadingById(reading.getReadingId());
+            SensorReading newReading = null;
+            if(readingByType.isPresent()) {
+                newReading = readingByType.get();
+                newReading.setValue(reading.getValue());
+                newReading.setLastReadDate(new Date());
+            } else {
+                newReading = new SensorReading(new Date(), type , reading.getValue());//create new reading
+            }
+            updatedSensor.getReadings().add(newReading);
             sensorRepository.save(updatedSensor);
             return updatedSensor;
         }             

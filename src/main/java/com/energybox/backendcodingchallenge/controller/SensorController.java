@@ -13,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -32,8 +33,18 @@ public class SensorController {
         this.service = service;
     }
 
+    @ApiOperation( value = "List all sensors", response = Sensor.class, responseContainer = "List")
+    @GetMapping( value = "" )
+    public ResponseEntity<List<Sensor>> getSensors( @ApiParam(value = "Type of the sensor", required = false)
+    @RequestParam(required = false) String type){
+        if(type == null){
+            return new ResponseEntity<>(service.getAllSensors(), HttpStatus.OK);
+        }
+        return new ResponseEntity<>(service.getAllSensorsByType(SensorType.valueOf(type)), HttpStatus.OK);
+    }
+
     @ApiOperation( value = "create a sensor", response = Gateway.class )
-    @RequestMapping( value = "/add", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE )
+    @PostMapping( value = "/add", consumes = MediaType.APPLICATION_JSON_VALUE )
     public ResponseEntity<Object> create(
             @RequestBody Sensor sensor
     ) throws IOException, InterruptedException {
@@ -59,17 +70,5 @@ public class SensorController {
         }
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
-
-    @ApiOperation( value = "List all sensors", response = Sensor.class, responseContainer = "List")
-    @GetMapping( value = "" )
-    public ResponseEntity<List<Sensor>> getSensors( @ApiParam(value = "Type of the sensor", required = false)
-    @RequestParam(required = false) String type){
-        if(type == null){
-            return new ResponseEntity<>(service.getAllSensors(), HttpStatus.OK);
-        }
-        List<Sensor> sensorsList = service.getAllSensorsByType(SensorType.valueOf(type));
-        return new ResponseEntity<>(sensorsList, HttpStatus.OK);
-    }
-
 
 }

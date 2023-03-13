@@ -15,6 +15,7 @@ import static org.springframework.data.neo4j.core.schema.Relationship.Direction.
 import com.energybox.backendcodingchallenge.custom.models.Enums.SensorType;
 
 import java.util.Set;
+import java.util.List;
 
 @Node
 @Data
@@ -34,6 +35,6 @@ public class Sensor {
     @Property
     private Set<SensorType> sensorTypes;
 
-    @Relationship(type = "HAS", direction = INCOMING)
-    private SensorReading lastReading;
+    @Relationship(type = "HAS")
+    private List<SensorReading> readings;
 }

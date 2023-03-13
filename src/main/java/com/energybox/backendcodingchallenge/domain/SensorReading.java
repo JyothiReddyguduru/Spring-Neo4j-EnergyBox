@@ -1,5 +1,7 @@
 package com.energybox.backendcodingchallenge.domain;
 
+import com.energybox.backendcodingchallenge.custom.models.Enums.SensorType;
+
 import org.springframework.data.neo4j.core.schema.Node;
 import org.springframework.data.neo4j.core.schema.GeneratedValue;
 import org.springframework.data.neo4j.core.schema.Id;
@@ -22,6 +24,10 @@ public class SensorReading {
     @Property
     @NonNull
     private Date lastReadDate;
+
+    @Property
+    @NonNull
+    private SensorType sensorType;
 
     @Property
     @NonNull

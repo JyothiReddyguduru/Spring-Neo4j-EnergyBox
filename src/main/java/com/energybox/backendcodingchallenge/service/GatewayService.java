@@ -1,5 +1,6 @@
 package com.energybox.backendcodingchallenge.service;
 
+import com.energybox.backendcodingchallenge.custom.models.Enums.SensorType;
 import com.energybox.backendcodingchallenge.domain.Gateway;
 import org.springframework.stereotype.Service;
 
@@ -22,8 +23,15 @@ public class GatewayService {
         return gatewayRepository.save(gateway);
     }
 
-    public List<Gateway> getAllGateways() {
+    public List<Gateway> getAllGateways(SensorType type) {
+        if(type != null) {
+            return getAllGatewaysByType(type);
+        }
         return gatewayRepository.findAll();
+    }
+
+    private List<Gateway> getAllGatewaysByType(SensorType type) {
+        return gatewayRepository.findAllBySensorType(type);
     }
 
     public Optional<Gateway> getGatewayById(Long id) { return gatewayRepository.findById(id); }

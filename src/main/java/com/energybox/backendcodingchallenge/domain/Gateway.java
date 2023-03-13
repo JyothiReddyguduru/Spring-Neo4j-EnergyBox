@@ -4,11 +4,10 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NonNull;
 import lombok.NoArgsConstructor;
-import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.neo4j.core.schema.*;
 
-import java.time.LocalDateTime;
 import java.util.Set;
+import com.fasterxml.jackson.annotation.JsonInclude;
 
 import static org.springframework.data.neo4j.core.schema.Relationship.Direction.INCOMING;
 
@@ -18,6 +17,7 @@ import static org.springframework.data.neo4j.core.schema.Relationship.Direction.
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class Gateway {
 
     @Id @GeneratedValue
@@ -34,8 +34,5 @@ public class Gateway {
 
     @Relationship(type = "CONNECTED_TO", direction = INCOMING)
     private Set<Sensor> sensors;
-
-    @CreatedDate
-    private LocalDateTime createdDate;
 
 }
