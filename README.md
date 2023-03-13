@@ -61,13 +61,5 @@ Bonus:
 
 
 Things to do
-- local instance of Neo4j
-- Docker
-- postman collection
-- architectural diagram
-- ER model
-- Exception Handler
-- Logger
-- jUnit
-- custom exception
+- Refactor tests
 

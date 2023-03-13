@@ -1,5 +1,14 @@
 package com.energybox.backendcodingchallenge.service;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.Date;
+import java.util.Optional;
+
 import com.energybox.backendcodingchallenge.domain.Sensor;
 import com.energybox.backendcodingchallenge.domain.SensorReadingModel;
 import com.energybox.backendcodingchallenge.domain.SensorReading;
@@ -7,17 +16,14 @@ import com.energybox.backendcodingchallenge.repository.SensorRepository;
 import com.energybox.backendcodingchallenge.custom.models.Enums.SensorType;
 import com.energybox.backendcodingchallenge.custom.exception.EntityNotFoundException;
 import com.energybox.backendcodingchallenge.custom.exception.DuplicateEntityFoundException;
-import org.springframework.stereotype.Service;
-
-import java.util.List;
-import java.util.Date;
-import java.util.Optional;
 
 /**
  * Service entry point for sensor object manipulations
  */
 @Service
 public class SensorService {
+
+    Logger LOGGER = LoggerFactory.getLogger(SensorService.class);
 
     private final SensorReadingService readingService;
 
@@ -33,9 +39,12 @@ public class SensorService {
         Optional<Sensor> optional = sensorRepository.findOneBySensorId(sensor.getSensorId());
         // new gateway creation and if it is not a duplicate
         if (optional.isPresent() && !isUpdate) {
+            LOGGER.error("Duplicate Sensor object found with sensor id " + sensor.getSensorId() );
             throw new DuplicateEntityFoundException("Duplicate Sensor object");
         }
-        return sensorRepository.save(sensor);
+        sensor = sensorRepository.save(sensor);
+        LOGGER.info(isUpdate ? "Sensor object updated": "Sensor object created");
+        return sensor;
     }
 
     /**
@@ -58,10 +67,13 @@ public class SensorService {
                 newReading = oldReading.get();
                 newReading.setValue(readingModel.getValue());
                 newReading.setLastReadDate(new Date());
+                LOGGER.info("Updating last reading found for " + readingModel.getSensorId());
                 readingService.updateReading(newReading);// save
             } else {
                 newReading = new SensorReading(new Date(), type, readingModel.getValue());// create new reading
                 updatedSensor.getReadings().add(newReading);
+                LOGGER.info("Create new reading for " + readingModel.getSensorId());
+                LOGGER.info("Update sensor or " + readingModel.getSensorId());
                 sensorRepository.save(updatedSensor);
             }
             return getSensorById(readingModel.getSensorId()).get();
