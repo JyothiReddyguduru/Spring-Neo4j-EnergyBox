@@ -1,0 +1,13 @@
+version: '3.8'
+services:
+  neo4j-dev:
+    container_name: neo4j-dev
+    image: neo4j:4.2.4
+    ports:
+      - 7474:7474
+      - 7687:7687
+    volumes:
+      - $HOME/Docker/neo4j/data:/data
+      - $HOME/Docker/neo4j/logs:/logs
+    environment:
+      NEO4J_AUTH: neo4j/123456
