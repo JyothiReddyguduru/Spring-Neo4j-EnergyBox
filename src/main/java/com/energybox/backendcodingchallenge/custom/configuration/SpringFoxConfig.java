@@ -1,4 +1,4 @@
-package com.energybox.backendcodingchallenge.custom.exception.configuration;
+package com.energybox.backendcodingchallenge.custom.configuration;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

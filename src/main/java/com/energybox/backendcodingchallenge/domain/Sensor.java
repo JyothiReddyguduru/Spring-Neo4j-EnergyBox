@@ -15,7 +15,6 @@ import com.energybox.backendcodingchallenge.custom.models.Enums.SensorType;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
 import java.util.Set;
-import java.util.List;
 
 @Node
 @Data

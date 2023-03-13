@@ -17,4 +17,10 @@ public class BackendExceptionHandler {
         return ResponseEntity.notFound().build();
     }
 
+    @ExceptionHandler(DuplicateEntityFoundException.class)
+    ResponseEntity duplicateEntityFound(DuplicateEntityFoundException ex) {
+        logger.debug("handling exception::" + ex);
+        return ResponseEntity.badRequest().build();
+    }
+
 }

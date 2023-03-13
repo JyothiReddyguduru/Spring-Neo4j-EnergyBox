@@ -1,13 +1,11 @@
 package com.energybox.backendcodingchallenge.service;
 
+import java.util.Optional;
+import org.springframework.stereotype.Service;
+
 import com.energybox.backendcodingchallenge.repository.SensorReadingRepository;
 import com.energybox.backendcodingchallenge.custom.models.Enums.SensorType;
 import com.energybox.backendcodingchallenge.domain.SensorReading;
-import com.energybox.backendcodingchallenge.domain.SensorReadingModel;
-
-import java.util.Date;
-import java.util.Optional;
-import org.springframework.stereotype.Service;
 
 @Service
 public class SensorReadingService {
@@ -23,7 +21,7 @@ public class SensorReadingService {
     }
 
     public Optional<SensorReading> getReadingById(Long id) {
-        if(id == null){
+        if (id == null) {
             return Optional.empty();
         }
         return sensorReadingRepository.findById(id);
@@ -32,5 +30,5 @@ public class SensorReadingService {
     public SensorReading updateReading(SensorReading reading) {
         return sensorReadingRepository.save(reading);
     }
-    
+
 }
