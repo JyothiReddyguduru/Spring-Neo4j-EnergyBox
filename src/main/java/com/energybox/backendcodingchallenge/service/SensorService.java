@@ -10,9 +10,7 @@ import com.energybox.backendcodingchallenge.custom.exception.EntityNotFoundExcep
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.Optional;
 
 @Service
@@ -31,27 +29,28 @@ public class SensorService {
         return sensorRepository.save(sensor);
     }
 
-    public Sensor updateReading(SensorReadingModel reading) {
-        Optional<Sensor> sensor = getSensorById(reading.getSensorId());
+    public Sensor updateSensorReading(SensorReadingModel readingModel) {
+        Optional<Sensor> sensor = getSensorById(readingModel.getSensorId());
         if(sensor.isPresent()){
             Sensor updatedSensor = sensor.get();
             SensorType type = SensorType.valueOf(
-                    reading.getSensorType());
+                readingModel.getSensorType());
             //get reading by sensor id
-            Optional<SensorReading> readingByType = readingService.getReadingById(reading.getReadingId());
+            Optional<SensorReading> oldReading = readingService.getReadingById(readingModel.getReadingId());
             SensorReading newReading = null;
-            if(readingByType.isPresent()) {
-                newReading = readingByType.get();
-                newReading.setValue(reading.getValue());
+            if(oldReading.isPresent()) {
+                newReading = oldReading.get();
+                newReading.setValue(readingModel.getValue());
                 newReading.setLastReadDate(new Date());
+                readingService.updateReading(newReading);//save
             } else {
-                newReading = new SensorReading(new Date(), type , reading.getValue());//create new reading
+                newReading = new SensorReading(new Date(), type , readingModel.getValue());//create new reading
+                updatedSensor.getReadings().add(newReading);
+                sensorRepository.save(updatedSensor);
             }
-            updatedSensor.getReadings().add(newReading);
-            sensorRepository.save(updatedSensor);
-            return updatedSensor;
+            return getSensorById(readingModel.getSensorId()).get();
         }             
-        throw new EntityNotFoundException(reading.getSensorId());
+        throw new EntityNotFoundException(SensorReading.class.getName(), readingModel.getSensorId());
     }
 
     public List<Sensor> getAllSensors() {

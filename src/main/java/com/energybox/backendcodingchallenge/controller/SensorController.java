@@ -25,6 +25,7 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping( value = "/sensors" )
+@ApiOperation("Sensors API")
 public class SensorController {
 
     private final SensorService service;
@@ -33,9 +34,10 @@ public class SensorController {
         this.service = service;
     }
 
+
     @ApiOperation( value = "List all sensors", response = Sensor.class, responseContainer = "List")
     @GetMapping( value = "" )
-    public ResponseEntity<List<Sensor>> getSensors( @ApiParam(value = "Type of the sensor", required = false)
+     public ResponseEntity<List<Sensor>> getSensors( @ApiParam(value = "Type of the sensor", required = false)
     @RequestParam(required = false) String type){
         if(type == null){
             return new ResponseEntity<>(service.getAllSensors(), HttpStatus.OK);
@@ -45,19 +47,18 @@ public class SensorController {
 
     @ApiOperation( value = "create a sensor", response = Gateway.class )
     @PostMapping( value = "/add", consumes = MediaType.APPLICATION_JSON_VALUE )
-    public ResponseEntity<Object> create(
+    public ResponseEntity<Sensor> create(
             @RequestBody Sensor sensor
     ) throws IOException, InterruptedException {
-        service.createOrPutSensor(sensor);
-        return new ResponseEntity<>( HttpStatus.OK );
+        return new ResponseEntity<>(service.createOrPutSensor(sensor), HttpStatus.OK );
     }
 
     @ApiOperation( value = "Update a sensor reading", response = Sensor.class )
     @RequestMapping( value = "/update", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE )
     public ResponseEntity<Sensor> update(
-            @RequestBody SensorReadingModel reading
+            @RequestBody SensorReadingModel readingModel
     ) throws IOException, InterruptedException {
-        return new ResponseEntity<>( service.updateReading(reading),  HttpStatus.OK );
+        return new ResponseEntity<>( service.updateSensorReading(readingModel),  HttpStatus.OK );
     }
 
     @ApiOperation( value = "List one sensor by id", response = Sensor.class )

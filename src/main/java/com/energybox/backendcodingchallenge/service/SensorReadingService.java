@@ -29,10 +29,8 @@ public class SensorReadingService {
         return sensorReadingRepository.findById(id);
     }
 
-    public SensorReading updateReading(SensorReadingModel reading) {
-        SensorReading sensorReading = new SensorReading(new Date(), 
-                            SensorType.valueOf(reading.getSensorType()), reading.getValue());
-        return sensorReadingRepository.save(sensorReading);
+    public SensorReading updateReading(SensorReading reading) {
+        return sensorReadingRepository.save(reading);
     }
     
 }

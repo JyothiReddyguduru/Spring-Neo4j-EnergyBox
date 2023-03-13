@@ -11,8 +11,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 
 import static org.springframework.data.neo4j.core.schema.Relationship.Direction.INCOMING;
 
-// The @Data is a Lombok annotation that generates our getters, setters, 
-// equals, hashCode, and toString methods for the domain class.
+
 @Node
 @Data
 @NoArgsConstructor

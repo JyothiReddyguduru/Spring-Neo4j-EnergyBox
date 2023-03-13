@@ -10,9 +10,9 @@ import org.springframework.data.neo4j.core.schema.Id;
 import org.springframework.data.neo4j.core.schema.Node;
 import org.springframework.data.neo4j.core.schema.Property;
 import org.springframework.data.neo4j.core.schema.Relationship;
-import static org.springframework.data.neo4j.core.schema.Relationship.Direction.INCOMING;
 
 import com.energybox.backendcodingchallenge.custom.models.Enums.SensorType;
+import com.fasterxml.jackson.annotation.JsonInclude;
 
 import java.util.Set;
 import java.util.List;
@@ -21,6 +21,7 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class Sensor {
 
     @Id @GeneratedValue
@@ -36,5 +37,5 @@ public class Sensor {
     private Set<SensorType> sensorTypes;
 
     @Relationship(type = "HAS")
-    private List<SensorReading> readings;
+    private Set<SensorReading> readings;
 }
