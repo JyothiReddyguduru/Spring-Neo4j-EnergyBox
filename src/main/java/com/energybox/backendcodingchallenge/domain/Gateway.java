@@ -23,6 +23,7 @@ public class Gateway {
     private Long id;
 
     @NonNull
+    @Property
     private String gatewayId;
 
     @Property("IP address")

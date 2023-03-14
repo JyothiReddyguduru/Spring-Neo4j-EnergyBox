@@ -23,7 +23,7 @@ import com.energybox.backendcodingchallenge.custom.exception.DuplicateEntityFoun
 @Service
 public class SensorService {
 
-    Logger LOGGER = LoggerFactory.getLogger(SensorService.class);
+    private final static Logger LOGGER = LoggerFactory.getLogger(SensorService.class);
 
     private final SensorReadingService readingService;
 
@@ -34,13 +34,45 @@ public class SensorService {
         this.readingService = readingService;
     }
 
+     /***
+     * Return list of all sensors
+     * @return List<Sensor>
+     */
+    public List<Sensor> getAllSensors() {
+        return sensorRepository.findAll();
+    }
+
+    /***
+     * Return list of all sensors that belong to a sensor type
+     * @param sensorType
+     * @return sensor
+     */
+    public List<Sensor> getAllSensorsByType(SensorType sensorType) {
+        return sensorRepository.findAllSensorsBySensorType(sensorType);
+    }
+
+    /**
+     * Returns an optional of sensor having given id
+     * @param id
+     * @return Optional<Sensor>
+     */
+    public Optional<Sensor> getSensorById(Long id) {
+        return sensorRepository.findById(id);
+    }
+
+    /***
+     * Create a new sensor if not present else update
+     * @param sensor
+     * @param isUpdate
+     * @return
+     */
     public Sensor createOrPutSensor(Sensor sensor, boolean isUpdate) {
         // check if gateway is already present for creation;
         Optional<Sensor> optional = sensorRepository.findOneBySensorId(sensor.getSensorId());
         // new gateway creation and if it is not a duplicate
         if (optional.isPresent() && !isUpdate) {
             LOGGER.error("Duplicate Sensor object found with sensor id " + sensor.getSensorId() );
-            throw new DuplicateEntityFoundException("Duplicate Sensor object");
+            throw new DuplicateEntityFoundException("Duplicate Sensor object with sensor id " + sensor.getSensorId());
         }
         sensor = sensorRepository.save(sensor);
         LOGGER.info(isUpdate ? "Sensor object updated": "Sensor object created");
@@ -56,41 +88,27 @@ public class SensorService {
      */
     public Sensor updateSensorReading(SensorReadingModel readingModel) {
         Optional<Sensor> sensor = getSensorById(readingModel.getSensorId());
+        SensorType type = SensorType.valueOf(
+                readingModel.getSensorType());
         if (sensor.isPresent()) {
             Sensor updatedSensor = sensor.get();
-            SensorType type = SensorType.valueOf(
-                    readingModel.getSensorType());
-            // get reading by sensor id
-            Optional<SensorReading> oldReading = readingService.getReadingById(readingModel.getReadingId());
-            SensorReading newReading = null;
-            if (oldReading.isPresent()) {
-                newReading = oldReading.get();
-                newReading.setValue(readingModel.getValue());
-                newReading.setLastReadDate(new Date());
-                LOGGER.info("Updating last reading found for " + readingModel.getSensorId());
-                readingService.updateReading(newReading);// save
-            } else {
-                newReading = new SensorReading(new Date(), type, readingModel.getValue());// create new reading
-                updatedSensor.getReadings().add(newReading);
-                LOGGER.info("Create new reading for " + readingModel.getSensorId());
-                LOGGER.info("Update sensor or " + readingModel.getSensorId());
-                sensorRepository.save(updatedSensor);
-            }
+            updatedSensor.getReadings().stream()
+                    .filter(t -> t.getSensorType().equals(type)).findAny().ifPresentOrElse(b -> {
+                        b.setValue(readingModel.getValue());
+                        b.setLastReadDate(new Date());
+                        LOGGER.info("Updating last reading found for " + readingModel.getSensorId());
+                        readingService.updateReading(b);
+                    }, () -> {
+                        SensorReading newReading = new SensorReading(new Date(), type, readingModel.getValue());
+                        updatedSensor.getReadings().add(newReading);
+                        LOGGER.info("Create new reading for " + readingModel.getSensorId());
+                        LOGGER.info("Update sensor or " + readingModel.getSensorId());
+                        sensorRepository.save(updatedSensor);
+                    });
+                    
             return getSensorById(readingModel.getSensorId()).get();
         }
-        throw new EntityNotFoundException(SensorReading.class.getName(), readingModel.getSensorId());
-    }
-
-    public List<Sensor> getAllSensors() {
-        return sensorRepository.findAll();
-    }
-
-    public List<Sensor> getAllSensorsByType(SensorType sensorType) {
-        return sensorRepository.findAllSensorsBySensorType(sensorType);
-    }
-
-    public Optional<Sensor> getSensorById(Long id) {
-        return sensorRepository.findById(id);
+        throw new EntityNotFoundException(Sensor.class.getName(), readingModel.getSensorId());
     }
 
 }

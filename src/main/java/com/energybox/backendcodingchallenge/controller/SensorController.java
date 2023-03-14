@@ -35,7 +35,7 @@ public class SensorController {
         this.service = service;
     }
 
-    @ApiOperation(value = "List all sensors", response = Sensor.class, responseContainer = "List")
+    @ApiOperation(value = "list all sensors", response = Sensor.class, responseContainer = "List")
     @GetMapping(value = "")
     public ResponseEntity<List<Sensor>> getSensors(
             @ApiParam(value = "Type of the sensor", required = false) @RequestParam(required = false) String type) {
@@ -49,10 +49,10 @@ public class SensorController {
     @PostMapping(value = "/add", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Sensor> create(
             @RequestBody Sensor sensor) throws IOException, InterruptedException {
-        return new ResponseEntity<>(service.createOrPutSensor(sensor, false), HttpStatus.CREATED);
+        return new ResponseEntity<Sensor>(service.createOrPutSensor(sensor, false), HttpStatus.CREATED);
     }
 
-    @ApiOperation(value = "Update a sensor reading", response = Sensor.class)
+    @ApiOperation(value = "update a sensor reading", response = Sensor.class)
     @RequestMapping(value = "/update", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Sensor> update(
             @RequestBody SensorReadingModel readingModel) throws IOException, InterruptedException {
@@ -63,7 +63,7 @@ public class SensorController {
         }
     }
 
-    @ApiOperation(value = "List one sensor by id", response = Sensor.class)
+    @ApiOperation(value = "list one sensor by id", response = Sensor.class)
     @RequestMapping(value = "/{id}", method = RequestMethod.GET)
     public ResponseEntity<Sensor> getById(
             @ApiParam(value = "id of the sensor", required = true) @PathVariable(value = "id") Long id) {

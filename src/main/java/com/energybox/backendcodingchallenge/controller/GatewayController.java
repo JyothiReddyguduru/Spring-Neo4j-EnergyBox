@@ -47,6 +47,7 @@ public class GatewayController {
     }
 
     @ApiOperation(value = "list one gateway by id", response = Gateway.class)
+    @ApiResponse(code = 200, message = "Gateway found")
     @RequestMapping(value = "/{id}", method = RequestMethod.GET)
     public ResponseEntity<Gateway> getById(@PathVariable(value = "id") Long id) {
         return Optional.of(gatewayService.getGatewayById(id))
@@ -56,6 +57,7 @@ public class GatewayController {
     }
 
     @ApiOperation(value = "create a gateway", response = Gateway.class)
+    @ApiResponse(code = 200, message = "Successfully created")
     @RequestMapping(value = "/add", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Gateway> create(
             @RequestBody Gateway gateway) throws IOException, InterruptedException {

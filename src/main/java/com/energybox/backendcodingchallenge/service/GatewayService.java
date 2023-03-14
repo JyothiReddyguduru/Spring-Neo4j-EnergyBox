@@ -1,7 +1,6 @@
 package com.energybox.backendcodingchallenge.service;
 
 import org.springframework.stereotype.Service;
-import io.swagger.annotations.ApiOperation;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,10 +18,9 @@ import com.energybox.backendcodingchallenge.custom.models.Enums.SensorType;
 import com.energybox.backendcodingchallenge.domain.Gateway;
 
 @Service
-@ApiOperation(value = "Service entry point for Gateway")
 public class GatewayService {
 
-    Logger LOGGER = LoggerFactory.getLogger(GatewayService.class);
+    private final static Logger LOGGER = LoggerFactory.getLogger(GatewayService.class);
 
     private final GatewayRepository gatewayRepository;
 
@@ -35,10 +33,8 @@ public class GatewayService {
 
     /**
      * Create or update a gateway if it
-     * 
      * @param gateway
      * @return
-     *         TO-Do improve this logic
      */
     public Gateway createOrPutGateway(Gateway gateway, boolean isUpdate) {
         // check if gateway is already present for creation;
@@ -46,7 +42,7 @@ public class GatewayService {
         // new gateway creation and if it is not a duplicate
         if (gatewayOptional.isPresent() && !isUpdate) {
             LOGGER.error("Duplicate Gateway object");
-            throw new DuplicateEntityFoundException("Duplicate Gateway object");
+            throw new DuplicateEntityFoundException("Duplicate Gateway object for gatewayId " + gateway.getGatewayId());
         }
         LOGGER.info(isUpdate ? "Gateway object updated": "Gateway object created");
         return gatewayRepository.save(gateway);
@@ -65,13 +61,17 @@ public class GatewayService {
         return gatewayRepository.findAll();
     }
 
+    /**
+     * Return all gateways that have a sensor of given sensor type
+     * @param SensorType
+     * @return all gateway by sensor type
+     */
     private List<Gateway> getAllGatewaysByType(SensorType type) {
         return gatewayRepository.findAllBySensorType(type);
     }
 
     /**
      * Get a gateway by id
-     * 
      * @param id
      * @return optional gateway by id
      */
@@ -82,7 +82,6 @@ public class GatewayService {
     /***
      * Add a given sensor to given gateway if both objects are available
      * else throw exceptions
-     * 
      * @param sensorId
      * @param gatewayId
      * @return Gateway
@@ -97,16 +96,24 @@ public class GatewayService {
         if (!gateway.isPresent()) {
             throw new EntityNotFoundException(Gateway.class.getName(), gatewayId);
         }
+        // check if sensor is connected to any gateway
+        // TO-DO check if Sensor already mapped to Gateway
         // if both are present, add sensor to the list of sensors in gateway object
         sensor.ifPresent(s -> {
             gateway.ifPresent(g -> {
                 Set<Sensor> sensors = g.getSensors();
+                boolean found = sensors.stream().anyMatch(t -> t.getSensorId().equals(s.getSensorId()));
+                if(found) {
+                    throw new RuntimeException("Sensor already mapped to Gateway");
+                }
                 sensors.add(s);
                 g.setSensors(sensors);
                 createOrPutGateway(g, true);
+                LOGGER.info("Sensor " + sensor.get().getSensorId() + " is mapped to Gateway"
+                        + gateway.get().getGatewayId());
             });
         });
-        return gateway.get();
+        return getGatewayById(gatewayId).get();
     }
 
 }
