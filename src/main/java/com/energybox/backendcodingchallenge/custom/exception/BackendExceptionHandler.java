@@ -33,11 +33,11 @@ public class BackendExceptionHandler {
     ResponseEntity<ErrorMessage> duplicateEntityFound(DuplicateEntityFoundException ex, WebRequest request) {
         logger.debug("handling exception::" + ex);
         ErrorMessage message = new ErrorMessage(
-        HttpStatus.NOT_FOUND.value(),
+        HttpStatus.NOT_ACCEPTABLE.value(),
         new Date(),
         ex.getMessage(),
         request.getDescription(false));
-        return new ResponseEntity<ErrorMessage>(message, HttpStatus.NOT_FOUND);
+        return new ResponseEntity<ErrorMessage>(message, HttpStatus.NOT_ACCEPTABLE);
     }
 
     @ExceptionHandler(Exception.class)

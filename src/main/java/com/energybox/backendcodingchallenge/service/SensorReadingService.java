@@ -1,9 +1,5 @@
 package com.energybox.backendcodingchallenge.service;
 
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.util.Optional;
 import org.springframework.stereotype.Service;
 

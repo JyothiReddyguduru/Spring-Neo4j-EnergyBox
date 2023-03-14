@@ -66,16 +66,17 @@ public class SensorControllerTests {
         types.add(SensorType.HUMIDITY);
         sensor.setSensorTypes(types);
 
-        ResultActions response = mockMvc.perform(post("/sensors/add", generatedString)
+        ResultActions response = mockMvc.perform(post("/sensors/add", sensor)
             .contentType(MediaType.APPLICATION_JSON)
             .content(objectMapper.writeValueAsString(sensor)));
 
             response.andExpect(status().isCreated());
-
         
-        mockMvc.perform(get("/sensors/add", generatedString)
-            .contentType(MediaType.APPLICATION_JSON))
-            .andExpect(status().isBadRequest());
+            response = mockMvc.perform(post("/sensors/add", sensor)
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(objectMapper.writeValueAsString(sensor)));
+
+            response.andExpect(status().isNotAcceptable());
 
     }
 

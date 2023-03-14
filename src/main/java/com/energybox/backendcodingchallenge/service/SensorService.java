@@ -81,10 +81,10 @@ public class SensorService {
 
     /**
      * Update last reading of a sensor for the given sensor type
-     * if sensor exists
+     * if sensor and reading exists else new reading is added to sensor
      * 
      * @param readingModel
-     * @return
+     * @return Sensor
      */
     public Sensor updateSensorReading(SensorReadingModel readingModel) {
         Optional<Sensor> sensor = getSensorById(readingModel.getSensorId());
@@ -96,16 +96,16 @@ public class SensorService {
                     .filter(t -> t.getSensorType().equals(type)).findAny().ifPresentOrElse(b -> {
                         b.setValue(readingModel.getValue());
                         b.setLastReadDate(new Date());
-                        LOGGER.info("Updating last reading found for " + readingModel.getSensorId());
+                        LOGGER.info("Update reading for " + readingModel.getSensorId() + "and" + type);
                         readingService.updateReading(b);
                     }, () -> {
                         SensorReading newReading = new SensorReading(new Date(), type, readingModel.getValue());
                         updatedSensor.getReadings().add(newReading);
                         LOGGER.info("Create new reading for " + readingModel.getSensorId());
-                        LOGGER.info("Update sensor or " + readingModel.getSensorId());
+                        LOGGER.info("Update sensor with new reading" + readingModel.getSensorId());
                         sensorRepository.save(updatedSensor);
                     });
-                    
+
             return getSensorById(readingModel.getSensorId()).get();
         }
         throw new EntityNotFoundException(Sensor.class.getName(), readingModel.getSensorId());

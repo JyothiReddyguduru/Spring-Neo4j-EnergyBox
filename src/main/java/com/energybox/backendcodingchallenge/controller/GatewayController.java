@@ -8,7 +8,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.PathVariable;
 
@@ -20,6 +19,7 @@ import java.util.List;
 import java.util.Optional;
 import java.io.IOException;
 
+import com.energybox.backendcodingchallenge.custom.exception.DuplicateEntityFoundException;
 import com.energybox.backendcodingchallenge.custom.exception.EntityNotFoundException;
 import com.energybox.backendcodingchallenge.custom.models.Enums.SensorType;
 import com.energybox.backendcodingchallenge.domain.Gateway;
@@ -48,7 +48,7 @@ public class GatewayController {
 
     @ApiOperation(value = "list one gateway by id", response = Gateway.class)
     @ApiResponse(code = 200, message = "Gateway found")
-    @RequestMapping(value = "/{id}", method = RequestMethod.GET)
+    @GetMapping(value = "/{id}")
     public ResponseEntity<Gateway> getById(@PathVariable(value = "id") Long id) {
         return Optional.of(gatewayService.getGatewayById(id))
                 .map(gatewayOpt -> new ResponseEntity<Gateway>(gatewayOpt.get(),
@@ -58,7 +58,7 @@ public class GatewayController {
 
     @ApiOperation(value = "create a gateway", response = Gateway.class)
     @ApiResponse(code = 200, message = "Successfully created")
-    @RequestMapping(value = "/add", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(value = "/add", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Gateway> create(
             @RequestBody Gateway gateway) throws IOException, InterruptedException {
         return new ResponseEntity<>(gatewayService.createOrPutGateway(gateway, false), HttpStatus.CREATED);
