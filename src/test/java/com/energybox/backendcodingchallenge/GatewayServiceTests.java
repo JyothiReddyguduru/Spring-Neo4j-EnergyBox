@@ -2,19 +2,21 @@ package com.energybox.backendcodingchallenge;
 
 import org.junit.jupiter.api.Test;
 
-import com.energybox.backendcodingchallenge.custom.models.Enums.SensorType;
-import com.energybox.backendcodingchallenge.service.GatewayService;
-import com.energybox.backendcodingchallenge.service.SensorService;
-import com.energybox.backendcodingchallenge.domain.Gateway;
-import com.energybox.backendcodingchallenge.domain.Sensor;
-
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.util.Assert;
+import static org.mockito.Mockito.when;
+import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import java.util.List;
 import java.util.Set;
 import java.util.HashSet;
 import java.util.Optional;
+
+import com.energybox.backendcodingchallenge.custom.models.Enums.SensorType;
+import com.energybox.backendcodingchallenge.service.GatewayService;
+import com.energybox.backendcodingchallenge.service.SensorService;
+import com.energybox.backendcodingchallenge.domain.Gateway;
+import com.energybox.backendcodingchallenge.domain.Sensor;
 
 /**
  * Tests for gateway service
@@ -25,7 +27,7 @@ public class GatewayServiceTests {
     @Autowired
     private GatewayService gatewayService;
 
-    @Autowired
+    @Mock
     private SensorService sensorService;
 
     @Test
@@ -56,6 +58,11 @@ public class GatewayServiceTests {
         Set<SensorType> types = new HashSet<SensorType>();
         types.add(SensorType.HUMIDITY);
         sensor.setSensorTypes(types);
+        sensor.setId(Long.valueOf(1000));
+
+        when(sensorService.createOrPutSensor(sensor, false)).
+        thenReturn(sensor);
+
         sensor = sensorService.createOrPutSensor(sensor, false);
 
         String generatedString = Util.randomString();

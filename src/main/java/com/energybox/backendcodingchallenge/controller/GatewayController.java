@@ -19,7 +19,6 @@ import java.util.List;
 import java.util.Optional;
 import java.io.IOException;
 
-import com.energybox.backendcodingchallenge.custom.exception.DuplicateEntityFoundException;
 import com.energybox.backendcodingchallenge.custom.exception.EntityNotFoundException;
 import com.energybox.backendcodingchallenge.custom.models.Enums.SensorType;
 import com.energybox.backendcodingchallenge.domain.Gateway;
